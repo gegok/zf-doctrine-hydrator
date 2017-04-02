@@ -1,5 +1,4 @@
 <?php
-
 namespace ZF\Doctrine\Hydrator\Strategy;
 
 use Zend\Hydrator\Strategy\StrategyInterface;
@@ -15,8 +14,7 @@ use stdClass;
  *
  * @returns Link
  */
-class CollectionLink extends AbstractCollectionStrategy implements
-    StrategyInterface
+class CollectionLink extends AbstractCollectionStrategy implements StrategyInterface
 {
     protected $metadataMap;
     protected $filterKey;
@@ -47,7 +45,7 @@ class CollectionLink extends AbstractCollectionStrategy implements
 
     public function extract($value)
     {
-        if (! method_exists($value, 'getTypeClass')) {
+        if (!method_exists($value, 'getTypeClass')) {
             return;
         }
 
@@ -62,12 +60,14 @@ class CollectionLink extends AbstractCollectionStrategy implements
         // FIXME: use zf-hal collection_name
         $link = new Link('self');
         $link->setRoute($config['route_name']);
-        $link->setRouteParams(array('id' => null));
+        $link->setRouteParams(array($config['entity_identifier_name'] => null));
+
+        $ownerIdentifier = $this->getMetadataMap()[get_class($value->getOwner())]['entity_identifier_name'];
 
         $filterValue = array(
-            'field' => $value->getMapping()['mappedBy'] ? : $value->getMapping()['inversedBy'],
-            'type' =>isset($value->getMapping()['joinTable']) ? 'ismemberof' : 'eq',
-            'value' => $value->getOwner()->getId(),
+            'field' => $value->getMapping()['mappedBy'] ?: $value->getMapping()['inversedBy'],
+            'type' => isset($value->getMapping()['joinTable']) ? 'ismemberof' : 'eq',
+            'value' => (string) $value->getOwner()->{$filter->filter('get_' . $ownerIdentifier)}(),
         );
 
         $link->setRouteOptions(array(
