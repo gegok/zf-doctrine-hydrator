@@ -53,7 +53,7 @@ class CollectionLink extends AbstractCollectionStrategy implements StrategyInter
 
         $filter = new FilterChain();
         $filter
-            ->attachByName('WordCamelCaseToUnderscore')
+            ->attachByName('wordunderscoretocamelcase')
             ->attachByName('StringToLower');
 
         // Better way to create mapping name?
